@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function active(uid) { return firestore.exists(/databases/(default)/documents/users/$(uid)) && firestore.get(/databases/(default)/documents/users/$(uid)).data.deleting == false; }
+    function trusted(sender, receiver) { return firestore.exists(/databases/(default)/documents/users/$(sender)/contacts/$(receiver)); }
+    match /voice/{sender}/{receiver}/{file} {
+      allow read: if request.auth != null && request.auth.token.email_verified == true && active(request.auth.uid)
+        && (request.auth.uid == sender || request.auth.uid == receiver) && trusted(sender, receiver)
+        && resource.timeCreated > request.time - duration.value(30, 'd');
+      allow create: if request.auth != null && request.auth.token.email_verified == true && request.auth.uid == sender
+        && active(sender) && active(receiver) && trusted(sender, receiver)
+        && file.matches('[a-zA-Z0-9_-]{8,128}[.]m4a') && request.resource.size < 2000000
+        && request.resource.contentType == 'audio/mp4';
+      allow update, delete: if false;
+    }
+  }
+}

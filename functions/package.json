@@ -1,0 +1,15 @@
+{
+  "name": "roadguard-functions",
+  "private": true,
+  "main": "lib/index.js",
+  "engines": { "node": "22" },
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "test:rules": "node --test test/rules.emulator.mjs",
+    "test:commands": "node --test test/commands.emulator.mjs",
+    "test:emulators": "npm run test:rules && npm run test:commands"
+  },
+  "dependencies": { "firebase-admin": "13.6.0", "firebase-functions": "6.6.0" },
+  "devDependencies": { "typescript": "5.9.3", "@types/node": "22.18.12", "@firebase/rules-unit-testing": "5.0.0", "firebase": "12.5.0", "firebase-tools": "14.22.0" }
+}

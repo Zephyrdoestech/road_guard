@@ -1,0 +1,13 @@
+t_ms,speed_kmh,accuracy_m,in_vehicle,expected_phase,acceleration_g,rotation_rad,speed_drop_kmh,expected_impact
+0,0,5,false,Monitoring,1,0,0,false
+5000,25,5,true,Monitoring,1,0,0,false
+10000,25,5,true,Monitoring,1,0,0,false
+15000,25,5,true,Moving,1,0,0,false
+20000,,100,true,Moving,1,0,0,false
+25000,0,5,true,Moving,1,0,0,false
+30000,0,5,true,Moving,6,0,0,false
+35000,0,5,true,Moving,1,0,0,false
+40000,25,5,true,Moving,1,0,0,false
+45000,0,5,true,Moving,6,4,20,true
+50000,0,5,true,Moving,6,4,0,false
+180000,0,5,true,Moving,1,0,0,false

@@ -1,0 +1,16 @@
+.gradle/
+.kotlin/
+.idea/
+**/build/
+local.properties
+**/google-services.json
+**/node_modules/
+functions/lib/
+*-debug.log
+.firebase/
+*.jks
+*.keystore
+.env*
+!.env.example
+artifacts/
+*.log

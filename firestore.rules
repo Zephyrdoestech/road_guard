@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function verified() { return request.auth != null && request.auth.token.email_verified == true; }
+    function active() { return verified() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.deleting == false; }
+    function trusted(owner) { return exists(/databases/$(database)/documents/users/$(owner)/contacts/$(request.auth.uid)); }
+    function fresh() { return resource.data.expiresAt > request.time; }
+    function participant() { return request.auth.uid == resource.data.ownerUid || (request.auth.uid in resource.data.participantUids && trusted(resource.data.ownerUid)); }
+    match /users/{uid} {
+      allow read: if active() && request.auth.uid == uid;
+      match /contacts/{other} { allow read: if active() && request.auth.uid == uid; }
+    }
+    match /trips/{trip} { allow read: if active() && participant(); }
+    match /alerts/{alert} { allow read: if active() && participant(); }
+    match /messages/{message} {
+      allow read: if active() &&
+        ((request.auth.uid == resource.data.senderUid && trusted(resource.data.receiverUid)) ||
+         (request.auth.uid == resource.data.receiverUid && trusted(resource.data.senderUid)));
+    }
+    match /locations/{sample} { allow read: if active() && fresh() && resource.data.ownerUid == request.auth.uid; }
+    match /tripEvents/{event} { allow read: if active() && fresh() && resource.data.ownerUid == request.auth.uid; }
+    // Every write and all internal collections are callable-function only.
+    match /{document=**} { allow write: if false; }
+  }
+}
